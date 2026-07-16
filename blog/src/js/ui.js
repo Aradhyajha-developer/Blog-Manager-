@@ -1,112 +1,303 @@
+import { getBlogs } from "./data.js";
 
 
-// =======================
-// DARK MODE
-// =======================
-
-if(darkBtn){
-
-    darkBtn.addEventListener(
-        "click",
-        ()=>{
-
-            document.body.classList.toggle("dark");
-
-
-            const isDark =
-            document.body.classList.contains("dark");
-
-
-            localStorage.setItem(
-                "darkMode",
-                isDark
-            );
-
-        }
-    );
-
-}
-
-
-// =======================
-// LOAD DARK MODE
-// =======================
-
-if(
-localStorage.getItem("darkMode")==="true"
-){
-
-    document.body.classList.add("dark");
-
-}
 // ======================================
-// EVENTS
+// RENDER BLOG LIST
 // ======================================
 
-export function bindBlogEvents(
+export function renderBlogList(container, blogs) {
 
-  container,
 
-  onDelete,
+  container.innerHTML = "";
 
-  onEdit,
 
-  onFavorite,
+  const emptyState =
+    document.getElementById("emptyState");
 
-  onPin
 
-) {
+  // Counters
 
-  container.addEventListener("click", (e) => {
+  document.getElementById("totalBlogs").innerText =
+    blogs.length;
 
-    const id = Number(e.target.dataset.id);
 
-    if (!id) return;
+  document.getElementById("favoriteBlogs").innerText =
+    blogs.filter(
+      blog => blog.favorite
+    ).length;
 
-    if (e.target.classList.contains("delete")) {
 
-      onDelete(id);
 
-    }
+  // Empty state
 
-    else if (e.target.classList.contains("edit")) {
+  if(blogs.length === 0){
 
-      onEdit(id);
+    emptyState.style.display = "block";
 
-    }
+    return;
 
-    else if (e.target.classList.contains("favorite")) {
+  }
 
-      onFavorite(id);
 
-    }
+  emptyState.style.display = "none";
 
-    else if (e.target.classList.contains("pin")) {
 
-      onPin(id);
 
-    }
+  blogs.forEach(blog=>{
+
+
+    const li =
+    document.createElement("li");
+
+
+    li.className="blog-card";
+
+
+
+    li.innerHTML = `
+
+
+    <div class="blog-top">
+
+
+      <h2 class="blog-title">
+
+        ${blog.pinned ? "📌" : ""}
+
+        ${blog.favorite ? "⭐" : ""}
+
+        ${blog.title}
+
+      </h2>
+
+
+
+      <span class="category">
+
+        ${blog.category}
+
+      </span>
+
+
+    </div>
+
+
+
+    <p class="blog-body">
+
+      ${blog.body}
+
+    </p>
+
+
+
+    <div class="blog-info">
+
+
+      <span>
+        📅 ${blog.createdAt}
+      </span>
+
+
+      <span>
+        ⏱ ${blog.readTime}
+      </span>
+
+
+    </div>
+
+
+
+
+    <div class="blog-actions">
+
+
+      <button 
+      class="favorite"
+      data-id="${blog.id}">
+
+      ${
+        blog.favorite
+        ? "⭐ Remove"
+        : "⭐ Favorite"
+      }
+
+      </button>
+
+
+
+      <button
+      class="pin"
+      data-id="${blog.id}">
+
+      ${
+        blog.pinned
+        ? "📌 Unpin"
+        : "📌 Pin"
+      }
+
+      </button>
+
+
+
+
+      <button
+      class="edit"
+      data-id="${blog.id}">
+
+      ✏ Edit
+
+      </button>
+
+
+
+
+      <button
+      class="delete"
+      data-id="${blog.id}">
+
+      🗑 Delete
+
+      </button>
+
+
+
+    </div>
+
+
+    `;
+
+
+
+    container.appendChild(li);
+
 
   });
 
+
 }
+
+
+
+
+
+
+// ======================================
+// EVENT DELEGATION
+// ======================================
+
+
+export function bindBlogEvents(
+container,
+onDelete,
+onEdit,
+onFavorite,
+onPin
+){
+
+
+
+container.addEventListener(
+"click",
+(e)=>{
+
+
+const button =
+e.target.closest("button");
+
+
+if(!button) return;
+
+
+
+const id =
+Number(button.dataset.id);
+
+
+
+if(button.classList.contains("delete")){
+
+
+onDelete(id);
+
+
+}
+
+
+
+else if(button.classList.contains("edit")){
+
+
+onEdit(id);
+
+
+}
+
+
+
+else if(button.classList.contains("favorite")){
+
+
+onFavorite(id);
+
+
+}
+
+
+
+else if(button.classList.contains("pin")){
+
+
+onPin(id);
+
+
+}
+
+
+
+});
+
+
+}
+
+
+
+
+
 
 // ======================================
 // TOAST
 // ======================================
 
-export function showToast(message) {
 
-  const toast = document.getElementById("toast");
+export function showToast(message){
 
-  toast.innerText = message;
 
-  toast.classList.add("show");
+const toast =
+document.getElementById("toast");
 
-  setTimeout(() => {
 
-    toast.classList.remove("show");
+if(!toast) return;
 
-  }, 2500);
 
-} 
+
+toast.innerText =
+message;
+
+
+
+toast.classList.add("show");
+
+
+
+setTimeout(()=>{
+
+
+toast.classList.remove("show");
+
+
+},2500);
+
+
+
+}

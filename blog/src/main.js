@@ -1,5 +1,6 @@
 import "./style.css";
 
+
 import {
   addBlog,
   deleteBlog,
@@ -20,29 +21,54 @@ import {
 } from "./js/ui.js";
 
 
+
 // =======================
 // DOM ELEMENTS
 // =======================
 
-const form = document.querySelector("#blogForm");
+const form =
+document.querySelector("#blogForm");
 
-const titleInput = document.querySelector("#title");
-const bodyInput = document.querySelector("#body");
-const categoryInput = document.querySelector("#category");
 
-const searchInput = document.querySelector("#search");
+const titleInput =
+document.querySelector("#title");
 
-const categoryFilter = document.querySelector("#categoryFilter");
 
-const sortBtn = document.querySelector("#sortBlogs");
+const bodyInput =
+document.querySelector("#body");
 
-const clearBtn = document.querySelector("#clearAll");
 
-const exportBtn = document.querySelector("#exportBtn");
+const categoryInput =
+document.querySelector("#category");
 
-const darkBtn = document.querySelector("#themeBtn");
+
+const searchInput =
+document.querySelector("#search");
+
+
+const categoryFilter =
+document.querySelector("#categoryFilter");
+
+
+const sortBtn =
+document.querySelector("#sortBlogs");
+
+
+const clearBtn =
+document.querySelector("#clearAll");
+
+
+const exportBtn =
+document.querySelector("#exportBtn");
+
+
+const darkBtn =
+document.querySelector("#themeBtn");
+
+
 const blogContainer =
 document.querySelector("#blog-list");
+
 
 
 // =======================
@@ -52,130 +78,217 @@ document.querySelector("#blog-list");
 let editId = null;
 
 
+
+
 // =======================
 // RENDER FUNCTION
 // =======================
 
 function render(){
 
-    let blogs = getBlogs();
 
-    const searchText =
-    searchInput.value.toLowerCase();
-
-
-    const category =
-    categoryFilter.value;
-
-
-    // Search Filter
-
-    blogs = blogs.filter(blog=>{
-
-
-        const matchSearch =
-        blog.title
-        .toLowerCase()
-        .includes(searchText)
-        ||
-        blog.body
-        .toLowerCase()
-        .includes(searchText);
+let blogs =
+getBlogs();
 
 
 
-        const matchCategory =
-        category === "All Categories"
-        ||
-        blog.category === category;
+const searchText =
+searchInput.value
+.toLowerCase();
 
 
-        return matchSearch && matchCategory;
+
+const selectedCategory =
+categoryFilter.value;
 
 
-    });
+
+
+blogs =
+blogs.filter(blog=>{
+
+
+const searchMatch =
+
+blog.title
+.toLowerCase()
+.includes(searchText)
+
+||
+
+blog.body
+.toLowerCase()
+.includes(searchText);
+
+
+
+const categoryMatch =
+
+selectedCategory === "All Categories"
+
+||
+
+blog.category === selectedCategory;
+
+
+
+return searchMatch && categoryMatch;
+
+
+
+});
 
 
 
 renderBlogList(
-blogs,
-blogContainer
+
+blogContainer,
+
+blogs
+
 );
+
+
+}
+
+
+
+
+
+// =======================
+// BLOG ACTION HANDLERS
+// =======================
+
+
+function handleDelete(id){
+
+
+deleteBlog(id);
+
+
+render();
+
+
+showToast(
+"Blog deleted"
+);
+
+
+}
+
+
+
+
+function handleEdit(id){
+
+
+const blog =
+getBlogs()
+.find(
+item=>item.id===id
+);
+
+
+
+if(!blog) return;
+
+
+
+editId=id;
+
+
+
+titleInput.value =
+blog.title;
+
+
+bodyInput.value =
+blog.body;
+
+
+categoryInput.value =
+blog.category;
+
+
+
+window.scrollTo({
+
+top:0,
+
+behavior:"smooth"
+
+});
+
+
+}
+
+
+
+
+
+function handleFavorite(id){
+
+
+toggleFavorite(id);
+
+
+render();
+
+
+}
+
+
+
+
+function handlePin(id){
+
+
+togglePin(id);
+
+
+render();
+
+
+}
+
+
+
+
+
+
+// =======================
+// EVENT BINDING
+// =======================
 
 
 bindBlogEvents(
 
-    blogContainer,
+blogContainer,
 
+handleDelete,
 
-    (id)=>{
+handleEdit,
 
-        deleteBlog(id);
+handleFavorite,
 
-        render();
-
-        showToast("Blog deleted");
-
-    },
-
-
-    (id)=>{
-
-        const blog =
-        getBlogs()
-        .find(
-            blog=>blog.id===id
-        );
-
-
-        editId = id;
-
-
-        titleInput.value =
-        blog.title;
-
-
-        bodyInput.value =
-        blog.body;
-
-
-        categoryInput.value =
-        blog.category;
-
-
-        window.scrollTo({
-            top:0,
-            behavior:"smooth"
-        });
-
-    },
-
-
-    (id)=>{
-
-        toggleFavorite(id);
-
-        render();
-
-    },
-
-
-    (id)=>{
-
-        togglePin(id);
-
-        render();
-
-    }
+handlePin
 
 );
 
- }  
+
+
+
+
+
 // =======================
-// FIRST RENDER
+// INITIAL LOAD
 // =======================
 
+
 render();
+
+
+
 
 
 
@@ -183,8 +296,11 @@ render();
 // ADD / UPDATE BLOG
 // =======================
 
+
 form.addEventListener(
+
 "submit",
+
 (e)=>{
 
 
@@ -196,8 +312,10 @@ const title =
 titleInput.value.trim();
 
 
+
 const body =
 bodyInput.value.trim();
+
 
 
 const category =
@@ -207,19 +325,43 @@ categoryInput.value;
 
 if(!title || !body){
 
-    showToast(
-    "Please fill all fields"
-    );
 
-    return;
+showToast(
+"Please fill all fields"
+);
+
+
+return;
+
 
 }
 
 
 
-// UPDATE
+
+
+const readTime =
+
+Math.max(
+
+1,
+
+Math.ceil(
+body.split(" ").length / 200
+)
+
+)
+
++ " min read";
+
+
+
+
+
+// UPDATE BLOG
 
 if(editId){
+
 
 
 const oldBlog =
@@ -230,12 +372,14 @@ blog=>blog.id===editId
 
 
 
+
 updateBlog(
+
 editId,
+
 {
 
 ...oldBlog,
-
 
 title,
 
@@ -243,21 +387,12 @@ body,
 
 category,
 
-
-readTime:
-Math.max(
-1,
-Math.ceil(
-body.split(" ").length/200
-)
-)
-+" min read"
-
-
+readTime
 
 }
 
 );
+
 
 
 
@@ -275,18 +410,23 @@ showToast(
 
 
 
-// ADD
+
+// ADD BLOG
 
 else{
 
 
 addBlog({
 
+
 id:Date.now(),
+
 
 title,
 
+
 body,
+
 
 category,
 
@@ -297,21 +437,15 @@ favorite:false,
 pinned:false,
 
 
+
 createdAt:
+
 new Date()
 .toLocaleDateString(),
 
 
 
-readTime:
-Math.max(
-1,
-Math.ceil(
-body.split(" ").length/200
-)
-)
-+" min read"
-
+readTime
 
 
 });
@@ -328,6 +462,7 @@ showToast(
 
 
 
+
 form.reset();
 
 
@@ -336,7 +471,12 @@ render();
 
 
 
-});
+}
+
+);
+
+
+
 
 
 
@@ -346,14 +486,21 @@ render();
 // =======================
 
 
-searchInput
-.addEventListener(
+searchInput.addEventListener(
+
 "input",
+
 ()=>{
+
 
 render();
 
-});
+
+}
+
+);
+
+
 
 
 
@@ -363,14 +510,22 @@ render();
 // =======================
 
 
-categoryFilter
-.addEventListener(
+categoryFilter.addEventListener(
+
 "change",
+
 ()=>{
+
 
 render();
 
-});
+
+}
+
+);
+
+
+
 
 
 
@@ -380,18 +535,20 @@ render();
 // =======================
 
 
-sortBtn
-.addEventListener(
+if(sortBtn){
+
+
+sortBtn.addEventListener(
+
 "click",
+
 ()=>{
 
 
 sortBlogs();
 
 
-
 render();
-
 
 
 showToast(
@@ -400,7 +557,14 @@ showToast(
 
 
 
-});
+}
+
+);
+
+
+}
+
+
 
 
 
@@ -410,9 +574,13 @@ showToast(
 // =======================
 
 
-clearBtn
-.addEventListener(
+if(clearBtn){
+
+
+clearBtn.addEventListener(
+
 "click",
+
 ()=>{
 
 
@@ -432,7 +600,6 @@ clearBlogs();
 render();
 
 
-
 showToast(
 "All blogs removed"
 );
@@ -443,7 +610,15 @@ showToast(
 
 
 
-});
+}
+
+);
+
+
+}
+
+
+
 
 
 
@@ -453,14 +628,17 @@ showToast(
 // =======================
 
 
-exportBtn
-.addEventListener(
+if(exportBtn){
+
+
+exportBtn.addEventListener(
+
 "click",
+
 ()=>{
 
 
 exportBlogs();
-
 
 
 showToast(
@@ -469,7 +647,14 @@ showToast(
 
 
 
-});
+}
+
+);
+
+
+}
+
+
 
 
 
@@ -479,38 +664,61 @@ showToast(
 // DARK MODE
 // =======================
 
+
 if(darkBtn){
 
-    darkBtn.addEventListener(
-        "click",
-        ()=>{
 
-            document.body.classList.toggle("dark");
+darkBtn.addEventListener(
 
+"click",
 
-            const isDark =
-            document.body.classList.contains("dark");
+()=>{
 
 
-            localStorage.setItem(
-                "darkMode",
-                isDark
-            );
+document.body.classList.toggle(
+"dark"
+);
 
-        }
-    );
+
+
+localStorage.setItem(
+
+"darkMode",
+
+document.body.classList.contains(
+"dark"
+)
+
+);
+
+
+
+}
+
+);
+
 
 }
 
 
-// =======================
+
+
+
 // LOAD DARK MODE
-// =======================
+
 
 if(
-localStorage.getItem("darkMode")==="true"
+
+localStorage.getItem(
+"darkMode"
+)==="true"
+
 ){
 
-    document.body.classList.add("dark");
+
+document.body.classList.add(
+"dark"
+);
+
 
 }
