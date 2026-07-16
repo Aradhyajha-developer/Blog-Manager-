@@ -1,87 +1,199 @@
-import {getBlogs} from "./data.js";
+import { getBlogs } from "./data.js";
 
+// ======================================
+// RENDER BLOGS
+// ======================================
 
+export function renderBlogList(container) {
 
-export function renderBlogList(container){
+  const blogs = getBlogs();
 
+  container.innerHTML = "";
 
-container.innerHTML="";
+  const emptyState = document.getElementById("emptyState");
 
+  // Update Counters
+  document.getElementById("totalBlogs").innerText = blogs.length;
 
+  document.getElementById("favoriteBlogs").innerText =
+    blogs.filter(blog => blog.favorite).length;
 
-getBlogs().forEach(blog=>{
+  // Empty State
+  if (blogs.length === 0) {
 
+    emptyState.style.display = "block";
+    return;
 
-const li=document.createElement("li");
+  }
 
+  emptyState.style.display = "none";
 
+  blogs.forEach(blog => {
 
-li.innerHTML=`
+    const li = document.createElement("li");
 
-<h3>${blog.title}</h3>
+    li.className = "blog-card";
 
-<p>${blog.body}</p>
+    li.innerHTML = `
 
+      <div class="blog-top">
 
-<button class="edit" data-id="${blog.id}">
-Edit
-</button>
+        <h2 class="blog-title">
 
+          ${blog.pinned ? "📌" : ""}
 
-<button class="delete" data-id="${blog.id}">
-Delete
-</button>
+          ${blog.favorite ? "⭐" : ""}
 
+          ${blog.title}
 
-`;
+        </h2>
 
+        <span class="category">
 
+          ${blog.category}
 
-container.appendChild(li);
+        </span>
 
+      </div>
 
+      <p class="blog-body">
 
-});
+        ${blog.body}
 
+      </p>
+
+      <div class="blog-info">
+
+        <span>
+
+          📅 ${blog.createdAt}
+
+        </span>
+
+        <span>
+
+          ⏱ ${blog.readTime}
+
+        </span>
+
+      </div>
+
+      <div class="blog-actions">
+
+        <button
+          class="favorite"
+          data-id="${blog.id}"
+        >
+
+          ${blog.favorite ? "⭐ Remove" : "⭐ Favorite"}
+
+        </button>
+
+        <button
+          class="pin"
+          data-id="${blog.id}"
+        >
+
+          ${blog.pinned ? "📌 Unpin" : "📌 Pin"}
+
+        </button>
+
+        <button
+          class="edit"
+          data-id="${blog.id}"
+        >
+
+          ✏ Edit
+
+        </button>
+
+        <button
+          class="delete"
+          data-id="${blog.id}"
+        >
+
+          🗑 Delete
+
+        </button>
+
+      </div>
+
+    `;
+
+    container.appendChild(li);
+
+  });
 
 }
 
+// ======================================
+// EVENTS
+// ======================================
 
+export function bindBlogEvents(
 
+  container,
 
-export function bindBlogEvents(container,onDelete,onEdit){
+  onDelete,
 
+  onEdit,
 
+  onFavorite,
 
-container.addEventListener("click",(e)=>{
+  onPin
 
+) {
 
-const id=Number(e.target.dataset.id);
+  container.addEventListener("click", (e) => {
 
+    const id = Number(e.target.dataset.id);
 
+    if (!id) return;
 
-if(e.target.classList.contains("delete")){
+    if (e.target.classList.contains("delete")) {
 
+      onDelete(id);
 
-onDelete(id);
+    }
 
+    else if (e.target.classList.contains("edit")) {
+
+      onEdit(id);
+
+    }
+
+    else if (e.target.classList.contains("favorite")) {
+
+      onFavorite(id);
+
+    }
+
+    else if (e.target.classList.contains("pin")) {
+
+      onPin(id);
+
+    }
+
+  });
 
 }
 
+// ======================================
+// TOAST
+// ======================================
 
+export function showToast(message) {
 
-if(e.target.classList.contains("edit")){
+  const toast = document.getElementById("toast");
 
+  toast.innerText = message;
 
-onEdit(id);
+  toast.classList.add("show");
 
+  setTimeout(() => {
 
-}
+    toast.classList.remove("show");
 
-
-
-});
-
-
+  }, 2500);
 
 }

@@ -1,111 +1,526 @@
 import "./style.css";
 
 import {
-    getBlogs,
-    addBlog,
-    deleteBlog,
-    updateBlog
+  addBlog,
+  deleteBlog,
+  updateBlog,
+  toggleFavorite,
+  togglePin,
+  clearBlogs,
+  exportBlogs,
+  sortBlogs,
+  getBlogs
 } from "./js/data.js";
 
+
 import {
-    renderBlogList,
-    bindBlogEvents
+  renderBlogList,
+  bindBlogEvents,
+  showToast
 } from "./js/ui.js";
 
-const form = document.getElementById("blog-form");
-const titleInput = document.getElementById("title");
-const bodyInput = document.getElementById("body");
-const blogList = document.getElementById("blog-list");
-const submitBtn = document.getElementById("submitBtn");
+
+// =======================
+// DOM ELEMENTS
+// =======================
+
+const form = document.querySelector("#blogForm");
+
+const titleInput = document.querySelector("#title");
+const bodyInput = document.querySelector("#body");
+const categoryInput = document.querySelector("#category");
+
+const searchInput = document.querySelector("#search");
+
+const categoryFilter = document.querySelector("#categoryFilter");
+
+const sortBtn = document.querySelector("#sortBtn");
+
+const clearBtn = document.querySelector("#clearBtn");
+
+const exportBtn = document.querySelector("#exportBtn");
+
+const darkBtn = document.querySelector("#darkBtn");
+
+
+// =======================
+// STATE
+// =======================
 
 let editId = null;
 
-renderBlogList(blogList);
 
-form.addEventListener("submit", e => {
+// =======================
+// RENDER FUNCTION
+// =======================
 
-    e.preventDefault();
+function render(){
 
-    const title = titleInput.value.trim();
-    const body = bodyInput.value.trim();
+    let blogs = getBlogs();
 
-    if (!title || !body) {
+    const searchText =
+    searchInput.value.toLowerCase();
 
-        alert("Please fill all fields.");
 
-        return;
-    }
+    const category =
+    categoryFilter.value;
 
-    if (editId !== null) {
 
-        updateBlog(editId, {
+    // Search Filter
 
-            id: editId,
+    blogs = blogs.filter(blog=>{
 
-            title,
 
-            body
+        const matchSearch =
+        blog.title
+        .toLowerCase()
+        .includes(searchText)
+        ||
+        blog.body
+        .toLowerCase()
+        .includes(searchText);
 
-        });
 
-        editId = null;
 
-        submitBtn.textContent = "Add Blog";
+        const matchCategory =
+        category === "All Categories"
+        ||
+        blog.category === category;
 
-    }
 
-    else {
+        return matchSearch && matchCategory;
 
-        addBlog({
 
-            id: Date.now(),
+    });
 
-            title,
 
-            body
 
-        });
+    renderBlogList(blogs);
 
-    }
 
-    form.reset();
 
-    renderBlogList(blogList);
+    bindBlogEvents({
+
+        onDelete(id){
+
+            deleteBlog(id);
+
+            render();
+
+            showToast(
+            "Blog deleted"
+            );
+
+        },
+
+
+        onFavorite(id){
+
+            toggleFavorite(id);
+
+            render();
+
+        },
+
+
+        onPin(id){
+
+            togglePin(id);
+
+            render();
+
+        },
+
+
+        onEdit(blog){
+
+            editId = blog.id;
+
+
+            titleInput.value =
+            blog.title;
+
+
+            bodyInput.value =
+            blog.body;
+
+
+            categoryInput.value =
+            blog.category;
+
+
+            window.scrollTo({
+                top:0,
+                behavior:"smooth"
+            });
+
+        }
+
+
+    });
+
+
+}
+
+
+
+// =======================
+// FIRST RENDER
+// =======================
+
+render();
+
+
+
+// =======================
+// ADD / UPDATE BLOG
+// =======================
+
+form.addEventListener(
+"submit",
+(e)=>{
+
+
+e.preventDefault();
+
+
+
+const title =
+titleInput.value.trim();
+
+
+const body =
+bodyInput.value.trim();
+
+
+const category =
+categoryInput.value;
+
+
+
+if(!title || !body){
+
+    showToast(
+    "Please fill all fields"
+    );
+
+    return;
+
+}
+
+
+
+// UPDATE
+
+if(editId){
+
+
+const oldBlog =
+getBlogs()
+.find(
+blog=>blog.id===editId
+);
+
+
+
+updateBlog(
+editId,
+{
+
+...oldBlog,
+
+
+title,
+
+body,
+
+category,
+
+
+readTime:
+Math.max(
+1,
+Math.ceil(
+body.split(" ").length/200
+)
+)
++" min read"
+
+
+
+}
+
+);
+
+
+
+editId=null;
+
+
+
+showToast(
+"Blog updated"
+);
+
+
+
+}
+
+
+
+// ADD
+
+else{
+
+
+addBlog({
+
+id:Date.now(),
+
+title,
+
+body,
+
+category,
+
+
+favorite:false,
+
+
+pinned:false,
+
+
+createdAt:
+new Date()
+.toLocaleDateString(),
+
+
+
+readTime:
+Math.max(
+1,
+Math.ceil(
+body.split(" ").length/200
+)
+)
++" min read"
+
+
 
 });
 
-bindBlogEvents(
 
-    blogList,
 
-    id => {
+showToast(
+"Blog added"
+);
 
-        const confirmDelete = confirm("Delete this blog?");
 
-        if (!confirmDelete) return;
 
-        deleteBlog(id);
+}
 
-        renderBlogList(blogList);
 
-    },
 
-    id => {
+form.reset();
 
-        const blog = getBlogs().find(blog => blog.id === id);
 
-        if (!blog) return;
 
-        titleInput.value = blog.title;
+render();
 
-        bodyInput.value = blog.body;
 
-        editId = id;
 
-        submitBtn.textContent = "Update Blog";
+});
 
-        titleInput.focus();
 
-    }
+
+
+// =======================
+// SEARCH
+// =======================
+
+
+searchInput
+.addEventListener(
+"input",
+()=>{
+
+render();
+
+});
+
+
+
+
+// =======================
+// CATEGORY FILTER
+// =======================
+
+
+categoryFilter
+.addEventListener(
+"change",
+()=>{
+
+render();
+
+});
+
+
+
+
+// =======================
+// SORT
+// =======================
+
+
+sortBtn
+.addEventListener(
+"click",
+()=>{
+
+
+sortBlogs();
+
+
+
+render();
+
+
+
+showToast(
+"Blogs sorted"
+);
+
+
+
+});
+
+
+
+
+// =======================
+// CLEAR ALL
+// =======================
+
+
+clearBtn
+.addEventListener(
+"click",
+()=>{
+
+
+const confirmDelete =
+confirm(
+"Delete all blogs?"
+);
+
+
+
+if(confirmDelete){
+
+
+clearBlogs();
+
+
+render();
+
+
+
+showToast(
+"All blogs removed"
+);
+
+
+
+}
+
+
+
+});
+
+
+
+
+// =======================
+// EXPORT
+// =======================
+
+
+exportBtn
+.addEventListener(
+"click",
+()=>{
+
+
+exportBlogs();
+
+
+
+showToast(
+"Export successful"
+);
+
+
+
+});
+
+
+
+
+
+// =======================
+// DARK MODE
+// =======================
+
+
+darkBtn
+.addEventListener(
+"click",
+()=>{
+
+
+document.body
+.classList
+.toggle(
+"dark"
+);
+
+
+
+localStorage.setItem(
+
+"darkMode",
+
+document.body
+.classList
+.contains("dark")
 
 );
+
+
+
+});
+
+
+
+
+// =======================
+// LOAD DARK MODE
+// =======================
+
+
+if(
+localStorage.getItem(
+"darkMode"
+)==="true"
+){
+
+
+document.body
+.classList
+.add(
+"dark"
+);
+
+
+}
