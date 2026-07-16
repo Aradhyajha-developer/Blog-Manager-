@@ -3,275 +3,364 @@
 
 <head>
 
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-  <title>Blog Manager</title>
+    <title>Blog Manager</title>
 
 </head>
 
 <body>
 
-  <div class="container">
+<div class="app">
 
-    <!-- ================= Header ================= -->
+<!-- ========================= -->
+<!-- HEADER -->
+<!-- ========================= -->
 
-    <header class="header">
+<header>
 
-      <h1>📝 Blog Manager</h1>
+<div class="logo">
 
-      <button id="themeBtn">
-        🌙 Dark Mode
-      </button>
+<h1>📝 Blog <span>Manager</span></h1>
 
-    </header>
+</div>
 
 
+<button id="themeBtn">
 
-    <!-- ================= Statistics ================= -->
+🌙 Dark Mode
 
-    <section class="stats">
+</button>
 
-      <div class="stat-card">
+</header>
 
-        <h2 id="totalBlogs">0</h2>
 
-        <p>Total Blogs</p>
 
-      </div>
+<!-- ========================= -->
+<!-- MAIN -->
+<!-- ========================= -->
 
-      <div class="stat-card">
+<div class="dashboard">
 
-        <h2 id="favoriteBlogs">0</h2>
 
-        <p>Favorites</p>
+<!-- ========================= -->
+<!-- LEFT PANEL -->
+<!-- ========================= -->
 
-      </div>
+<aside class="sidebar">
 
-    </section>
 
+<!-- Statistics -->
 
+<div class="stats">
 
-    <!-- ================= Search ================= -->
+<div class="stat-card">
 
-    <input
+<div class="icon">
 
-      type="text"
+📄
 
-      id="searchInput"
+</div>
 
-      placeholder="🔍 Search Blog..."
+<h2 id="totalBlogs">
 
-    >
+0
 
+</h2>
 
+<p>
 
-    <!-- ================= Filter & Sort ================= -->
+Total Blogs
 
-    <div class="toolbar">
+</p>
 
-      <select id="categoryFilter">
+</div>
 
-        <option value="All">
-          All Categories
-        </option>
 
-        <option value="Technology">
-          Technology
-        </option>
 
-        <option value="Programming">
-          Programming
-        </option>
+<div class="stat-card">
 
-        <option value="Education">
-          Education
-        </option>
+<div class="icon">
 
-        <option value="Travel">
-          Travel
-        </option>
+❤️
 
-        <option value="Personal">
-          Personal
-        </option>
+</div>
 
-      </select>
+<h2 id="favoriteBlogs">
 
+0
 
+</h2>
 
-      <select id="sortBlogs">
+<p>
 
-        <option value="new">
-          Newest First
-        </option>
+Favorites
 
-        <option value="old">
-          Oldest First
-        </option>
+</p>
 
-      </select>
+</div>
 
-    </div>
 
+</div>
 
 
-    <!-- ================= Form ================= -->
 
-    <form id="blog-form">
+<!-- Search -->
 
-      <input
+<input
 
-        type="text"
+type="text"
 
-        id="title"
+id="searchInput"
 
-        placeholder="Enter Blog Title"
+placeholder="🔍 Search Blogs..."
 
-        required
+>
 
-      >
 
 
+<!-- Filter -->
 
-      <select id="category">
+<div class="filters">
 
-        <option value="Technology">
-          Technology
-        </option>
+<select id="categoryFilter">
 
-        <option value="Programming">
-          Programming
-        </option>
+<option>All Categories</option>
 
-        <option value="Education">
-          Education
-        </option>
+<option>Technology</option>
 
-        <option value="Travel">
-          Travel
-        </option>
+<option>Programming</option>
 
-        <option value="Personal">
-          Personal
-        </option>
+<option>Travel</option>
 
-      </select>
+<option>Education</option>
 
+<option>Personal</option>
 
+</select>
 
-      <textarea
 
-        id="body"
+<select id="sortBlogs">
 
-        maxlength="500"
+<option value="new">
 
-        placeholder="Write your blog..."
+Newest First
 
-        required
+</option>
 
-      ></textarea>
+<option value="old">
 
+Oldest First
 
+</option>
 
-      <small>
+</select>
 
-        <span id="charCount">
-          0
-        </span>/500 Characters
 
-      </small>
+</div>
 
 
 
-      <button
 
-        type="submit"
+<!-- Form -->
 
-        id="submitBtn"
+<div class="form-box">
 
-      >
+<h2>
 
-        Add Blog
+✍ Create New Blog
 
-      </button>
+</h2>
 
-    </form>
 
 
+<form id="blog-form">
 
-    <!-- ================= Action Buttons ================= -->
 
-    <div class="actions">
+<input
 
-      <button id="clearAll">
+type="text"
 
-        🗑 Clear All
+id="title"
 
-      </button>
+placeholder="Enter Blog Title"
 
+required
 
+>
 
-      <button id="exportBtn">
 
-        📤 Export
 
-      </button>
+<select id="category">
 
-    </div>
+<option>
 
+Technology
 
+</option>
 
-    <!-- ================= Blog List ================= -->
+<option>
 
-    <ul id="blog-list"></ul>
+Programming
 
+</option>
 
+<option>
 
-    <!-- ================= Empty State ================= -->
+Travel
 
-    <div
+</option>
 
-      id="emptyState"
+<option>
 
-      class="empty"
+Education
 
-    >
+</option>
 
-      <h2>
+<option>
 
-        📄 No Blogs Found
+Personal
 
-      </h2>
+</option>
 
-      <p>
+</select>
 
-        Create your first blog.
 
-      </p>
 
-    </div>
+<textarea
 
+id="body"
 
+maxlength="500"
 
-  </div>
+placeholder="Write your blog..."
 
+required
 
+></textarea>
 
-  <!-- Toast -->
 
-  <div id="toast"></div>
 
+<p>
 
+<span id="charCount">
 
-  <script
+0
 
-    type="module"
+</span>
 
-    src="/src/main.js"
+/500 Characters
 
-  ></script>
+</p>
+
+
+
+<button
+
+type="submit"
+
+id="submitBtn">
+
+Add Blog
+
+</button>
+
+
+
+</form>
+
+
+
+<div class="bottom-buttons">
+
+<button id="clearAll">
+
+🗑 Clear All
+
+</button>
+
+<button id="exportBtn">
+
+📤 Export JSON
+
+</button>
+
+</div>
+
+
+</div>
+
+
+</aside>
+
+
+
+
+<!-- ========================= -->
+<!-- RIGHT PANEL -->
+<!-- ========================= -->
+
+<section class="content">
+
+<h2>
+
+📚 All Blogs
+
+</h2>
+
+
+<ul id="blog-list">
+
+</ul>
+
+
+
+<div id="emptyState">
+
+<h2>
+
+📄 No Blogs Found
+
+</h2>
+
+<p>
+
+Create your first blog.
+
+</p>
+
+</div>
+
+
+
+</section>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+<div id="toast">
+
+Success
+
+</div>
+
+
+
+<script
+type="module"
+src="/src/main.js">
+
+</script>
 
 </body>
 
