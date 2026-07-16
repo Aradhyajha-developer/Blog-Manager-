@@ -472,55 +472,42 @@ showToast(
 // DARK MODE
 // =======================
 
-
-darkBtn
-.addEventListener(
-"click",
-()=>{
+const darkBtn = document.querySelector("#darkBtn");
 
 
-document.body
-.classList
-.toggle(
-"dark"
-);
+if(darkBtn){
+
+    darkBtn.addEventListener(
+    "click",
+    ()=>{
 
 
-
-localStorage.setItem(
-
-"darkMode",
-
-document.body
-.classList
-.contains("dark")
-
-);
+        document.body.classList.toggle("dark");
 
 
+        const isDark =
+        document.body.classList.contains("dark");
 
-});
+
+        localStorage.setItem(
+            "darkMode",
+            isDark
+        );
 
 
+    });
+
+}
 
 
 // =======================
 // LOAD DARK MODE
 // =======================
 
-
 if(
-localStorage.getItem(
-"darkMode"
-)==="true"
+localStorage.getItem("darkMode")==="true"
 ){
 
-
-document.body
-.classList
-.add(
-"dark"
-);
-
+    document.body.classList.add("dark");
 
 }
