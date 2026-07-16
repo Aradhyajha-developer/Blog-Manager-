@@ -232,7 +232,7 @@ transition:.3s;
 
 }
 
-#searchInput:focus{
+#search:focus{
 
 border-color:#2563eb;
 

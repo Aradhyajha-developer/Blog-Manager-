@@ -1,131 +1,44 @@
-import { getBlogs } from "./data.js";
 
-// ======================================
-// RENDER BLOGS
-// ======================================
 
-export function renderBlogList(container) {
+// =======================
+// DARK MODE
+// =======================
 
-  const blogs = getBlogs();
+if(darkBtn){
 
-  container.innerHTML = "";
+    darkBtn.addEventListener(
+        "click",
+        ()=>{
 
-  const emptyState = document.getElementById("emptyState");
+            document.body.classList.toggle("dark");
 
-  // Update Counters
-  document.getElementById("totalBlogs").innerText = blogs.length;
 
-  document.getElementById("favoriteBlogs").innerText =
-    blogs.filter(blog => blog.favorite).length;
+            const isDark =
+            document.body.classList.contains("dark");
 
-  // Empty State
-  if (blogs.length === 0) {
 
-    emptyState.style.display = "block";
-    return;
+            localStorage.setItem(
+                "darkMode",
+                isDark
+            );
 
-  }
-
-  emptyState.style.display = "none";
-
-  blogs.forEach(blog => {
-
-    const li = document.createElement("li");
-
-    li.className = "blog-card";
-
-    li.innerHTML = `
-
-      <div class="blog-top">
-
-        <h2 class="blog-title">
-
-          ${blog.pinned ? "📌" : ""}
-
-          ${blog.favorite ? "⭐" : ""}
-
-          ${blog.title}
-
-        </h2>
-
-        <span class="category">
-
-          ${blog.category}
-
-        </span>
-
-      </div>
-
-      <p class="blog-body">
-
-        ${blog.body}
-
-      </p>
-
-      <div class="blog-info">
-
-        <span>
-
-          📅 ${blog.createdAt}
-
-        </span>
-
-        <span>
-
-          ⏱ ${blog.readTime}
-
-        </span>
-
-      </div>
-
-      <div class="blog-actions">
-
-        <button
-          class="favorite"
-          data-id="${blog.id}"
-        >
-
-          ${blog.favorite ? "⭐ Remove" : "⭐ Favorite"}
-
-        </button>
-
-        <button
-          class="pin"
-          data-id="${blog.id}"
-        >
-
-          ${blog.pinned ? "📌 Unpin" : "📌 Pin"}
-
-        </button>
-
-        <button
-          class="edit"
-          data-id="${blog.id}"
-        >
-
-          ✏ Edit
-
-        </button>
-
-        <button
-          class="delete"
-          data-id="${blog.id}"
-        >
-
-          🗑 Delete
-
-        </button>
-
-      </div>
-
-    `;
-
-    container.appendChild(li);
-
-  });
+        }
+    );
 
 }
 
+
+// =======================
+// LOAD DARK MODE
+// =======================
+
+if(
+localStorage.getItem("darkMode")==="true"
+){
+
+    document.body.classList.add("dark");
+
+}
 // ======================================
 // EVENTS
 // ======================================
@@ -196,4 +109,4 @@ export function showToast(message) {
 
   }, 2500);
 
-}
+} 

@@ -34,13 +34,15 @@ const searchInput = document.querySelector("#search");
 
 const categoryFilter = document.querySelector("#categoryFilter");
 
-const sortBtn = document.querySelector("#sortBtn");
+const sortBtn = document.querySelector("#sortBlogs");
 
-const clearBtn = document.querySelector("#clearBtn");
+const clearBtn = document.querySelector("#clearAll");
 
 const exportBtn = document.querySelector("#exportBtn");
 
-const darkBtn = document.querySelector("#darkBtn");
+const darkBtn = document.querySelector("#themeBtn");
+const blogContainer =
+document.querySelector("#blog-list");
 
 
 // =======================
@@ -95,75 +97,79 @@ function render(){
 
 
 
-    renderBlogList(blogs);
+renderBlogList(
+blogs,
+blogContainer
+);
 
 
+bindBlogEvents(
 
-    bindBlogEvents({
-
-        onDelete(id){
-
-            deleteBlog(id);
-
-            render();
-
-            showToast(
-            "Blog deleted"
-            );
-
-        },
+    blogContainer,
 
 
-        onFavorite(id){
+    (id)=>{
 
-            toggleFavorite(id);
+        deleteBlog(id);
 
-            render();
+        render();
 
-        },
+        showToast("Blog deleted");
 
-
-        onPin(id){
-
-            togglePin(id);
-
-            render();
-
-        },
+    },
 
 
-        onEdit(blog){
+    (id)=>{
 
-            editId = blog.id;
-
-
-            titleInput.value =
-            blog.title;
-
-
-            bodyInput.value =
-            blog.body;
+        const blog =
+        getBlogs()
+        .find(
+            blog=>blog.id===id
+        );
 
 
-            categoryInput.value =
-            blog.category;
+        editId = id;
 
 
-            window.scrollTo({
-                top:0,
-                behavior:"smooth"
-            });
-
-        }
+        titleInput.value =
+        blog.title;
 
 
-    });
+        bodyInput.value =
+        blog.body;
 
 
-}
+        categoryInput.value =
+        blog.category;
 
 
+        window.scrollTo({
+            top:0,
+            behavior:"smooth"
+        });
 
+    },
+
+
+    (id)=>{
+
+        toggleFavorite(id);
+
+        render();
+
+    },
+
+
+    (id)=>{
+
+        togglePin(id);
+
+        render();
+
+    }
+
+);
+   
 // =======================
 // FIRST RENDER
 // =======================
@@ -472,30 +478,26 @@ showToast(
 // DARK MODE
 // =======================
 
-const darkBtn = document.querySelector("#darkBtn");
-
-
 if(darkBtn){
 
     darkBtn.addEventListener(
-    "click",
-    ()=>{
+        "click",
+        ()=>{
+
+            document.body.classList.toggle("dark");
 
 
-        document.body.classList.toggle("dark");
+            const isDark =
+            document.body.classList.contains("dark");
 
 
-        const isDark =
-        document.body.classList.contains("dark");
+            localStorage.setItem(
+                "darkMode",
+                isDark
+            );
 
-
-        localStorage.setItem(
-            "darkMode",
-            isDark
-        );
-
-
-    });
+        }
+    );
 
 }
 
