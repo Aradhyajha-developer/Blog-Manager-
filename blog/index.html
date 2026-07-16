@@ -1,13 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>blog</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Blog Manager</title>
+
+  <link rel="stylesheet" href="/src/style.css" />
+  <script type="module" src="/src/main.js"></script>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>Blog Manager</h1>
+
+    <form id="blog-form">
+
+      <input
+        type="text"
+        id="title"
+        placeholder="Blog Title"
+        required
+      />
+
+      <textarea
+        id="body"
+        placeholder="Write your blog..."
+        required
+      ></textarea>
+
+      <button type="submit">
+        Add Blog
+      </button>
+
+    </form>
+
+    <ul id="blog-list"></ul>
+
+  </div>
+
+</body>
 </html>
